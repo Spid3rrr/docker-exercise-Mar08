@@ -1,0 +1,49 @@
+version: '3'
+services:
+  nginx:
+    build : ./nginx-container
+    ports:
+      - 80:80
+    depends_on:
+      - web-server-1
+      - web-server-2
+      - web-server-3
+
+  web-server-1:
+    build : ./webserver
+    environment:
+      - MESSAGE=this is server 1
+      - DB_HOST=sql_db
+      - DB_USER=root
+      - DB_PASS=root
+      - SERVERNUM=1
+  web-server-2:
+    build : ./webserver
+    environment:
+      - MESSAGE=this is server 2
+      - DB_HOST=sql_db
+      - DB_USER=root
+      - DB_PASS=root
+      - SERVERNUM=2
+  web-server-3:
+    build : ./webserver
+    environment:
+      - MESSAGE=this is server 3
+      - DB_HOST=sql_db
+      - DB_USER=root
+      - DB_PASS=root
+      - SERVERNUM=3
+
+
+    depends_on:
+      - sql_db
+
+  sql_db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD-SHELL", 'mysqladmin ping']
+      interval: 10s
+      timeout: 2s
+      retries: 10
